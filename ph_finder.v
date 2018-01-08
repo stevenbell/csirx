@@ -7,6 +7,7 @@
  * @param out 32-bit output containing either  the packet header or forwarded data stream (output)
  * @param out_valid defines if out is valid (output)
  * @param ph_select defines whether 'out' contains the PH or not
+ */
  
 module ph_finder(rxbyteclkhs, reset, word_in, in_valid, out, out_valid, ph_select);
 	

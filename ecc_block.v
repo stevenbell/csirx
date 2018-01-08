@@ -5,6 +5,7 @@
  * @param no_error signals whether the PH has no errors (output)
  * @param corrected_error signals whether a single bit error was corrected (output)
  * @param error signals whether the PH has an error that cannot be corrected (output)
+ */
 
 module ecc_block(PH_in, PH_out, no_error, corrected_error, error);
 	
