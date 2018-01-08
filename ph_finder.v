@@ -1,7 +1,7 @@
 /* Packet Header Finder
  * @description: this module searches for the packet header in a stream of data
  * @param rxbyteclkhs the byte clock to synchrnize to (input)
- * @param reset an active-high reset signal (input)
+ * @param reset an active-high synchronous reset signal (input)
  * @param word_in 16-bit word (input)
  * @param in_valid defines if word_in is valid (input)
  * @param out 32-bit output containing either  the packet header or forwarded data stream (output)
