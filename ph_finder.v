@@ -1,5 +1,9 @@
-/* Packet Header Finder
- * @description: this module searches for the packet header in a stream of data
+/* Packet Header Finder: this module searches for the packet header in a stream of data
+ * Gedeon Nyengele <nyengele@stanford.edu>
+ * 08 January 2018
+ */
+
+/*
  * @param rxbyteclkhs the byte clock to synchrnize to (input)
  * @param reset an active-high synchronous reset signal (input)
  * @param word_in 16-bit word (input)
@@ -17,7 +21,7 @@ module ph_finder(rxbyteclkhs, reset, word_in, in_valid, out, out_valid, ph_selec
 	output out_valid, ph_select;
 
 	parameter STATE_INIT		= 2'b00;
-	parameter STATE_HALF_PH		= 2'b01;
+	//parameter STATE_HALF_PH		= 2'b01;
 	parameter STATE_FULL_PH		= 2'b10;
 	parameter STATE_BYPASS		= 2'b11;
 
@@ -26,15 +30,14 @@ module ph_finder(rxbyteclkhs, reset, word_in, in_valid, out, out_valid, ph_selec
 	reg [7:0] prev_byte1, prev_byte2;
 
 	always @(posedge rxbyteclkhs) begin
-		if(reset) begin
+		if(reset | ~in_valid) begin
 			state <= STATE_INIT;
 			prev_byte1 <= 8'h00;
 			prev_byte2 <= 8'h00;
 		end
-		else if(in_valid) begin
+		else begin
 			case(state)
-				STATE_INIT: begin prev_byte1 <= byte1; prev_byte2 <= byte2; state <= STATE_HALF_PH; end
-				STATE_HALF_PH: state <= STATE_FULL_PH;
+				STATE_INIT: begin prev_byte1 <= byte1; prev_byte2 <= byte2; state <= STATE_FULL_PH; end
 				STATE_FULL_PH: state <= STATE_BYPASS;
 				STATE_BYPASS: state <= STATE_BYPASS;		
 			endcase

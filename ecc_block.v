@@ -1,5 +1,9 @@
-/* ECC check block (combinational block)
- * @description: this module validates the packet header info based on received ECC
+/* ECC check block (combinational block): validates the packet header info based on received ECC
+ * Gedeon Nyengele <nyengele@stanford.edu>
+ * 08 January 2018
+ */
+
+/*
  * @param PH_in input packet header (input)
  * @param PH_out possibly corrected PH without the ECC field (output)
  * @param no_error signals whether the PH has no errors (output)
