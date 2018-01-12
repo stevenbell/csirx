@@ -6,48 +6,72 @@
 /*
  * @param rxbyteclkhs the byte clock to synchrnize to (input)
  * @param reset an active-high synchronous reset signal (input)
- * @param word_in 16-bit word (input)
- * @param in_valid defines if word_in is valid (input)
- * @param out 32-bit output containing either  the packet header or forwarded data stream (output)
- * @param out_valid defines if out is valid (output)
- * @param ph_select defines whether 'out' contains the PH or not
+ * @param din 16-bit word input. MSB = lane1_byte, LSB = lane2_byte (input)
+ * @param din_valid defines if word_in is valid (input)
+ * @param dout 32-bit output containing either  the packet header or forwarded data stream (output)
+ *             PH is formatted as [ECC, WC_MSB, WC_LSB, DATA_ID]
+ *             forwarded data stream format: MSB = lane1_byte, LSB = lane2_byte
+ * @param dout_valid defines if dout is valid (output)
+ * @param ph_select defines whether 'dout' contains the PH or not
  */
  
-module ph_finder(rxbyteclkhs, reset, word_in, in_valid, out, out_valid, ph_select);
-	
-	input rxbyteclkhs, reset, in_valid;
-	input [15:0] word_in;
-	output [31:0] out;
-	output out_valid, ph_select;
+module ph_finder(rxbyteclkhs, reset, din, din_valid, dout, dout_valid, ph_select);
 
-	parameter STATE_INIT		= 2'b00;
-	//parameter STATE_HALF_PH		= 2'b01;
-	parameter STATE_FULL_PH		= 2'b10;
-	parameter STATE_BYPASS		= 2'b11;
+	/* inputs */
+	input wire rxbyteclkhs, reset;
+	input wire [15:0] din;
+	input wire din_valid;
 
-	wire [7:0] byte1, byte2;
-	reg [1:0] state;
+	/* outputs */
+	output reg [31:0] dout;
+	output reg dout_valid;
+	output reg ph_select;
+
+	/* internal decl */
+	parameter STATE_HALF_PH	= 2'b00;
+	parameter STATE_FULL_PH	= 2'b01;
+	parameter STATE_BYPASS	= 2'b10;
+
 	reg [7:0] prev_byte1, prev_byte2;
+	reg [1:0] state;
 
+	/* state machine */
 	always @(posedge rxbyteclkhs) begin
-		if(reset | ~in_valid) begin
-			state <= STATE_INIT;
-			prev_byte1 <= 8'h00;
-			prev_byte2 <= 8'h00;
+		if(reset | ~din_valid) begin
+			dout <= 32'd0;
+			dout_valid <= 1'b0;
+			ph_select <= 1'b0;
+			prev_byte1 <= 8'd0;
+			prev_byte2 <= 8'd0;
+			state <= STATE_HALF_PH;
 		end
 		else begin
 			case(state)
-				STATE_INIT: begin prev_byte1 <= byte1; prev_byte2 <= byte2; state <= STATE_FULL_PH; end
-				STATE_FULL_PH: state <= STATE_BYPASS;
-				STATE_BYPASS: state <= STATE_BYPASS;		
+				STATE_HALF_PH: begin
+					prev_byte1 <= din[15:8];
+					prev_byte2 <= din[7:0];
+					state <= STATE_FULL_PH;
+				end
+
+				STATE_FULL_PH: begin
+					dout <= {din[7:0], din[15:8], prev_byte2, prev_byte1};
+					dout_valid <= 1'b1;
+					ph_select <= 1'b1;
+					state <= STATE_BYPASS;
+				end
+
+				STATE_BYPASS: begin
+					dout <= {din, 16'd0};
+					ph_select <= 1'b0;
+					state <= STATE_BYPASS;
+				end
+
+				default: begin
+					dout <= 32'd0;
+					dout_valid <= 1'b0;
+					ph_select <= 1'b0;
+				end
 			endcase
 		end
 	end
-
-	assign byte1 = word_in[7:0];
-	assign byte2 = word_in[15:8];
-	assign out = {byte2, byte1, prev_byte2, prev_byte1};
-	assign out_valid = ((state == STATE_FULL_PH) || (state == STATE_BYPASS)) ? 1'b1 : 1'b0;
-	assign ph_select = (state == STATE_FULL_PH) ? 1'b1 : 1'b0;
-
 endmodule

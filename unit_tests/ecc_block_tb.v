@@ -31,7 +31,7 @@ module ecc_block_tb;
 		#1 	PH_in = PH ^ (1 << 0) ^ (1 << 16); // errors (bit0 and 16)
 		#1	PH_in = PH ^ (1 << 1) ^ (1 << 21); // errors (bit1 and 21)
 		
-		#1	$stop;
+		#1	$finish;
 	end
 
 	initial
