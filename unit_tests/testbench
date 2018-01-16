@@ -1,0 +1,283 @@
+#! /usr/bin/vvp
+:ivl_version "0.9.7 " "(v0_9_7)";
+:vpi_time_precision + 0;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_0x101d0b0 .scope module, "pckthandler_fsm_tb" "pckthandler_fsm_tb" 2 1;
+ .timescale 0 0;
+v0x104d850_0 .var "clk", 0 0;
+v0x104d8f0_0 .var "data_stream", 15 0;
+v0x104db20_0 .var "ecc_error", 0 0;
+v0x104dba0_0 .var/i "fd", 31 0;
+v0x104dc20_0 .var "fr_active_exp", 0 0;
+v0x104dca0_0 .var "fr_valid_exp", 0 0;
+v0x104dd20_0 .net "frame_active", 0 0, v0x104d000_0; 1 drivers
+v0x104dda0_0 .net "frame_valid", 0 0, v0x104d1f0_0; 1 drivers
+v0x104de20_0 .var "out_exp", 15 0;
+v0x104dea0_0 .net "out_stream", 15 0, v0x104d140_0; 1 drivers
+v0x104df50_0 .var "ph_select", 0 0;
+v0x104dfd0_0 .var "ph_stream", 23 0;
+v0x104e080_0 .var "reset", 0 0;
+v0x104e130_0 .var/i "status", 31 0;
+v0x104e230_0 .var "valid_stream", 0 0;
+E_0x10216d0 .event negedge, v0x104d640_0;
+S_0x101bd00 .scope module, "DUT" "pckthandler_fsm" 2 15, 3 18, S_0x101d0b0;
+ .timescale 0 0;
+P_0xff7e88 .param/l "DATA_STREAM_WIDTH" 3 23, +C4<010000>;
+P_0xff7eb0 .param/l "PH_DECODE" 3 48, C4<00>;
+P_0xff7ed8 .param/l "PH_STREAM_WIDTH" 3 24, +C4<011000>;
+P_0xff7f00 .param/l "REC_DATA" 3 50, C4<10>;
+P_0xff7f28 .param/l "WAIT_EOT" 3 49, C4<01>;
+v0xff23f0_0 .net *"_s10", 0 0, C4<1>; 1 drivers
+v0x104c090_0 .net *"_s12", 0 0, C4<0>; 1 drivers
+v0x104c130_0 .net *"_s16", 5 0, L_0x104e950; 1 drivers
+v0x104c1d0_0 .net *"_s19", 4 0, C4<00000>; 1 drivers
+v0x104c280_0 .net *"_s2", 5 0, C4<000000>; 1 drivers
+v0x104c320_0 .net *"_s20", 5 0, C4<000001>; 1 drivers
+v0x104c400_0 .net *"_s22", 0 0, L_0x104eb50; 1 drivers
+v0x104c4a0_0 .net *"_s24", 0 0, C4<1>; 1 drivers
+v0x104c590_0 .net *"_s26", 0 0, C4<0>; 1 drivers
+v0x104c630_0 .net *"_s30", 5 0, L_0x104ef30; 1 drivers
+v0x104c730_0 .net *"_s33", 4 0, C4<00000>; 1 drivers
+v0x104c7d0_0 .net *"_s34", 5 0, C4<101011>; 1 drivers
+v0x104c8e0_0 .net *"_s36", 0 0, L_0x104f070; 1 drivers
+v0x104c980_0 .net *"_s38", 0 0, C4<1>; 1 drivers
+v0x104caa0_0 .net *"_s40", 0 0, C4<0>; 1 drivers
+v0x104cb40_0 .net *"_s6", 4 0, C4<00000>; 1 drivers
+v0x104ca00_0 .net *"_s7", 5 0, L_0x104e3b0; 1 drivers
+v0x104cc90_0 .net *"_s8", 0 0, L_0x104e570; 1 drivers
+v0x104cdb0_0 .var "byte_count", 15 0;
+v0x104ce30_0 .net "data_id_fied", 5 0, L_0x104e2e0; 1 drivers
+v0x104cd10_0 .net "data_id_field", 0 0, C4<z>; 0 drivers
+v0x104cf60_0 .net "data_stream", 15 0, v0x104d8f0_0; 1 drivers
+v0x104ceb0_0 .net "ecc_error", 0 0, v0x104db20_0; 1 drivers
+v0x104d0a0_0 .net "eof_id", 0 0, L_0x104eda0; 1 drivers
+v0x104d000_0 .var "frame_active", 0 0;
+v0x104d1f0_0 .var "frame_valid", 0 0;
+v0x104d140_0 .var "out_stream", 15 0;
+v0x104d350_0 .var "packet_size", 15 0;
+v0x104d290_0 .net "ph_select", 0 0, v0x104df50_0; 1 drivers
+v0x104d4c0_0 .net "ph_stream", 23 0, v0x104dfd0_0; 1 drivers
+v0x104d3d0_0 .net "pxdata_id", 0 0, L_0x104f1e0; 1 drivers
+v0x104d640_0 .net "reset", 0 0, v0x104e080_0; 1 drivers
+v0x104d540_0 .net "rxbyteclkhs", 0 0, v0x104d850_0; 1 drivers
+v0x104d7d0_0 .net "sof_id", 0 0, L_0x104e760; 1 drivers
+v0x104d6c0_0 .var "state", 1 0;
+v0x104d970_0 .net "valid_stream", 0 0, v0x104e230_0; 1 drivers
+E_0xff7e00 .event posedge, v0x104d540_0;
+L_0x104e2e0 .part v0x104dfd0_0, 0, 6;
+L_0x104e3b0 .concat [ 1 5 0 0], C4<z>, C4<00000>;
+L_0x104e570 .cmp/eq 6, L_0x104e3b0, C4<000000>;
+L_0x104e760 .functor MUXZ 1, C4<0>, C4<1>, L_0x104e570, C4<>;
+L_0x104e950 .concat [ 1 5 0 0], C4<z>, C4<00000>;
+L_0x104eb50 .cmp/eq 6, L_0x104e950, C4<000001>;
+L_0x104eda0 .functor MUXZ 1, C4<0>, C4<1>, L_0x104eb50, C4<>;
+L_0x104ef30 .concat [ 1 5 0 0], C4<z>, C4<00000>;
+L_0x104f070 .cmp/eq 6, L_0x104ef30, C4<101011>;
+L_0x104f1e0 .functor MUXZ 1, C4<0>, C4<1>, L_0x104f070, C4<>;
+    .scope S_0x101bd00;
+T_0 ;
+    %wait E_0xff7e00;
+    %load/v 8, v0x104d640_0, 1;
+    %jmp/0xz  T_0.0, 8;
+    %ix/load 0, 1, 0;
+    %assign/v0 v0x104d000_0, 0, 0;
+    %ix/load 0, 1, 0;
+    %assign/v0 v0x104d1f0_0, 0, 0;
+    %ix/load 0, 16, 0;
+    %assign/v0 v0x104d350_0, 0, 0;
+    %ix/load 0, 16, 0;
+    %assign/v0 v0x104cdb0_0, 0, 0;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 0;
+    %jmp T_0.1;
+T_0.0 ;
+    %load/v 8, v0x104d6c0_0, 2;
+    %cmpi/u 8, 0, 2;
+    %jmp/1 T_0.2, 6;
+    %cmpi/u 8, 1, 2;
+    %jmp/1 T_0.3, 6;
+    %cmpi/u 8, 2, 2;
+    %jmp/1 T_0.4, 6;
+    %jmp T_0.5;
+T_0.2 ;
+    %load/v 8, v0x104d970_0, 1;
+    %load/v 9, v0x104d290_0, 1;
+    %and 8, 9, 1;
+    %load/v 9, v0x104ceb0_0, 1;
+    %inv 9, 1;
+    %and 8, 9, 1;
+    %jmp/0xz  T_0.6, 8;
+    %load/v 8, v0x104d7d0_0, 1;
+    %jmp/0xz  T_0.8, 8;
+    %ix/load 0, 1, 0;
+    %assign/v0 v0x104d000_0, 0, 1;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 0;
+    %jmp T_0.9;
+T_0.8 ;
+    %load/v 8, v0x104d0a0_0, 1;
+    %jmp/0xz  T_0.10, 8;
+    %ix/load 0, 1, 0;
+    %assign/v0 v0x104d000_0, 0, 0;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 0;
+    %jmp T_0.11;
+T_0.10 ;
+    %load/v 8, v0x104d3d0_0, 1;
+    %jmp/0xz  T_0.12, 8;
+    %load/v 8, v0x104d000_0, 1;
+    %jmp/0xz  T_0.14, 8;
+    %ix/load 0, 16, 0;
+    %assign/v0 v0x104cdb0_0, 0, 0;
+    %ix/load 1, 8, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_0.16, 4;
+    %load/x1p 8, v0x104d4c0_0, 16;
+    %jmp T_0.17;
+T_0.16 ;
+    %mov 8, 2, 16;
+T_0.17 ;
+; Save base=8 wid=16 in lookaside.
+    %ix/load 0, 16, 0;
+    %assign/v0 v0x104d350_0, 0, 8;
+    %movi 8, 2, 2;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 8;
+    %jmp T_0.15;
+T_0.14 ;
+    %movi 8, 1, 2;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 8;
+T_0.15 ;
+T_0.12 ;
+T_0.11 ;
+T_0.9 ;
+    %jmp T_0.7;
+T_0.6 ;
+    %load/v 8, v0x104d970_0, 1;
+    %load/v 9, v0x104d290_0, 1;
+    %inv 9, 1;
+    %and 8, 9, 1;
+    %jmp/0xz  T_0.18, 8;
+    %movi 8, 1, 2;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 8;
+    %jmp T_0.19;
+T_0.18 ;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 0;
+T_0.19 ;
+T_0.7 ;
+    %jmp T_0.5;
+T_0.3 ;
+    %load/v 8, v0x104d970_0, 1;
+    %jmp/0xz  T_0.20, 8;
+    %movi 8, 1, 2;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 8;
+    %jmp T_0.21;
+T_0.20 ;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 0;
+T_0.21 ;
+    %jmp T_0.5;
+T_0.4 ;
+    %load/v 8, v0x104cdb0_0, 16;
+    %load/v 24, v0x104d350_0, 16;
+    %cmp/u 8, 24, 16;
+    %jmp/0xz  T_0.22, 5;
+    %ix/load 0, 1, 0;
+    %assign/v0 v0x104d1f0_0, 0, 1;
+    %load/v 8, v0x104cf60_0, 16;
+    %ix/load 0, 16, 0;
+    %assign/v0 v0x104d140_0, 0, 8;
+    %load/v 8, v0x104cdb0_0, 16;
+    %mov 24, 0, 16;
+    %addi 8, 2, 32;
+    %ix/load 0, 16, 0;
+    %assign/v0 v0x104cdb0_0, 0, 8;
+    %movi 8, 2, 2;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 8;
+    %jmp T_0.23;
+T_0.22 ;
+    %ix/load 0, 1, 0;
+    %assign/v0 v0x104d1f0_0, 0, 0;
+    %ix/load 0, 16, 0;
+    %assign/v0 v0x104d140_0, 0, 0;
+    %movi 8, 1, 2;
+    %ix/load 0, 2, 0;
+    %assign/v0 v0x104d6c0_0, 0, 8;
+T_0.23 ;
+    %jmp T_0.5;
+T_0.5 ;
+T_0.1 ;
+    %jmp T_0;
+    .thread T_0;
+    .scope S_0x101d0b0;
+T_1 ;
+    %set/v v0x104d850_0, 0, 1;
+    %set/v v0x104e080_0, 1, 1;
+    %movi 8, 4, 4;
+T_1.0 %cmp/s 0, 8, 4;
+    %jmp/0xz T_1.1, 5;
+    %add 8, 1, 4;
+    %delay 10, 0;
+    %load/v 12, v0x104d850_0, 1;
+    %inv 12, 1;
+    %set/v v0x104d850_0, 12, 1;
+    %jmp T_1.0;
+T_1.1 ;
+    %set/v v0x104e080_0, 0, 1;
+T_1.2 ;
+    %delay 10, 0;
+    %load/v 8, v0x104d850_0, 1;
+    %inv 8, 1;
+    %set/v v0x104d850_0, 8, 1;
+    %jmp T_1.2;
+    %end;
+    .thread T_1;
+    .scope S_0x101d0b0;
+T_2 ;
+    %vpi_func 2 28 "$fopen", 8, 32, "pckthandler_fsm_testvec.txt", "r";
+    %set/v v0x104dba0_0, 8, 32;
+    %end;
+    .thread T_2;
+    .scope S_0x101d0b0;
+T_3 ;
+    %set/v v0x104d8f0_0, 0, 16;
+    %set/v v0x104dfd0_0, 0, 24;
+    %set/v v0x104df50_0, 0, 1;
+    %set/v v0x104e230_0, 0, 1;
+    %set/v v0x104db20_0, 0, 1;
+    %wait E_0x10216d0;
+T_3.0 ;
+    %vpi_func 2 35 "$feof", 8, 32, v0x104dba0_0;
+    %nor/r 8, 8, 32;
+    %jmp/0xz T_3.1, 8;
+    %vpi_func 2 36 "$fscanf", 8, 32, v0x104dba0_0, "%h, %h, %h, %h, %h, %h, %h\012", v0x104d8f0_0, v0x104dfd0_0, v0x104e230_0, v0x104df50_0, v0x104de20_0, v0x104dc20_0, v0x104dca0_0;
+    %set/v v0x104e130_0, 8, 32;
+    %wait E_0xff7e00;
+    %delay 1, 0;
+    %vpi_call 2 39 "$display", "out=%h, out_exp=%h, fr_active=%h, fr_active_exp=%h, fr_valid=%h, fr_valid_exp=%h", v0x104dea0_0, v0x104de20_0, v0x104dd20_0, v0x104dc20_0, v0x104dda0_0, v0x104dca0_0;
+    %jmp T_3.0;
+T_3.1 ;
+    %movi 8, 20, 6;
+T_3.2 %cmp/s 0, 8, 6;
+    %jmp/0xz T_3.3, 5;
+    %add 8, 1, 6;
+    %wait E_0xff7e00;
+    %jmp T_3.2;
+T_3.3 ;
+    %vpi_call 2 43 "$fclose", v0x104dba0_0;
+    %vpi_call 2 44 "$finish";
+    %end;
+    .thread T_3;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "pckthandler_fsm_tb.v";
+    "..//pckthandler_fsm.v";

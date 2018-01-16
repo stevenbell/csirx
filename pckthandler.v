@@ -13,7 +13,7 @@
  * @param frame_active determines whether new frame either about to transmitted or in progress (output)
  * @param frame_valid determines whether a frame output is in progress (output)
  */
-module pckhandler(rxbyteclkhs, reset, in_stream, in_stream_valid, out_stream, frame_active, frame_valid);
+module pckthandler(rxbyteclkhs, reset, in_stream, in_stream_valid, out_stream, frame_active, frame_valid);
 	
 	/* parameters */
 	parameter IN_STREAM_WIDTH		= 16;
@@ -40,10 +40,10 @@ module pckhandler(rxbyteclkhs, reset, in_stream, in_stream_valid, out_stream, fr
 	ph_finder phf(
 		.rxbyteclkhs(rxbyteclkhs),
 		.reset(ph_finder_reset),
-		.word_in({in_stream[7:0], in_stream[15:8]}),
-		.in_valid(in_stream_valid),
-		.out(ph_finder_out),
-		.out_valid(ph_finder_valid),
+		.din(in_stream),
+		.din_valid(in_stream_valid),
+		.dout(ph_finder_out),
+		.dout_valid(ph_finder_valid),
 		.ph_select(ph_finder_ph_select)
 	);
 
@@ -59,7 +59,7 @@ module pckhandler(rxbyteclkhs, reset, in_stream, in_stream_valid, out_stream, fr
 		.ph_select(ph_finder_ph_select),
 		.valid_stream(ph_finder_valid),
 		.ecc_error(ecc_error),
-		.out_stream({out_stream[7:0], out_stream[15:8]}),
+		.out_stream(out_stream),
 		.frame_active(frame_active),
 		.frame_valid(frame_valid)
 	);

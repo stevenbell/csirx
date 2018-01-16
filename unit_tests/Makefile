@@ -2,6 +2,12 @@ OUTPUT	?= testbench
 ROOT 	= ../
 FLAGS 	= -g2005 -y $(ROOT)
 
+pckthandler: pckthandler_tb.v
+	iverilog $(FLAGS) $^ -o $(OUTPUT)
+
+pckthandler_fsm: pckthandler_fsm_tb.v
+	iverilog $(FLAGS) $^ -o $(OUTPUT)
+
 ph_finder: ph_finder_tb.v
 	iverilog $(FLAGS) $^ -o $(OUTPUT)
 

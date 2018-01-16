@@ -23,10 +23,6 @@ module pckthandler_fsm(rxbyteclkhs, reset, data_stream, ph_stream, ph_select, va
 	parameter DATA_STREAM_WIDTH		= 16;
 	parameter PH_STREAM_WIDTH		= 24;
 
-	parameter PH_DECODE	= 2'b00;
-	parameter WAIT_EOT	= 2'b01;
-	parameter REC_DATA	= 2'b10;
-
 	/* inputs */
 	input rxbyteclkhs, reset, ph_select, valid_stream, ecc_error;
 	input [(DATA_STREAM_WIDTH-1):0] data_stream;
@@ -37,83 +33,73 @@ module pckthandler_fsm(rxbyteclkhs, reset, data_stream, ph_stream, ph_select, va
 	output [(DATA_STREAM_WIDTH-1):0] out_stream;
 
 	/* internal decl */
-	reg [2:0] state;
-	reg fr_active, fr_valid;
-	reg [15:0] fr_byte_count;
-	reg [15:0] fr_data_size;
+	reg frame_active, frame_valid;
+	reg [(DATA_STREAM_WIDTH-1):0] out_stream;
 
 	wire sof_id, eof_id, pxdata_id;
-	wire data_id_fied = ph_stream[5:0];
+	wire [5:0] data_id_fied = ph_stream[5:0];
 	assign sof_id = (data_id_field == 6'h00) ? 1'b1 : 1'b0;
 	assign eof_id = (data_id_field == 6'h01) ? 1'b1 : 1'b0;
 	assign pxdata_id = (data_id_field == 6'h2B) ? 1'b1 : 1'b0;  // 2B = RAW10
-	
+
+	reg [1:0] state;
+	reg [15:0] packet_size, byte_count;
+
+	parameter PH_DECODE	= 2'b00;
+	parameter WAIT_EOT	= 2'b01;
+	parameter REC_DATA	= 2'b10;
+
 	always @(posedge rxbyteclkhs) begin
 		if(reset) begin
-			state 	<= PH_DECODE;
-			fr_valid <= 0;
-			fr_active <= 0;
+			frame_active <= 0;
+			frame_valid <= 0;
+			packet_size <= 0;
+			byte_count <= 0;
+			state <= PH_DECODE;
 		end
 		else begin
 			case(state)
-				PH_DECODE: begin
-							case({valid_stream, ph_select, ecc_error, sof_id, eof_id, pxdata_id})
-								6'b111XXX: begin // ECC error in packet header
-										   		state <= WAIT_EOT;
-										   end
-								6'b1101XX: begin // Start-of-Frame received
-												state <= PH_DECODE;
-												fr_active <= 1'b1;
-										   end
-								6'b11001X:	begin // End-of-Frame received
-												state <= PH_DECODE;
-												fr_active <= 1'b0;
-											end
-								6'b10XXX1: 	begin // Pixel data header received
-												fr_byte_count <= 0;
-												fr_data_size <= ph_stream[23:8];
-												if (fr_active) begin
-													fr_valid <= 1'b1;
-													state <= REC_DATA;
-												end
-												else begin
-													fr_valid <= 1'b0;
-													state <= WAIT_EOT;
-												end
-											end
-								6'b10XXX0: 	begin // other payload packet header received
-												state <= WAIT_EOT;
-											end
-
-							endcase
+				PH_DECODE: 	begin
+					if(valid_stream && ph_select && ~ecc_error) begin
+						if(sof_id) begin
+							frame_active <= 1'b1;
+							state <= PH_DECODE;
 						end
-				WAIT_EOT: begin
-							if (valid_stream) state <= WAIT_EOT;
-							else begin
-								state <= PH_DECODE;
-							end
+						else if(eof_id) begin
+							frame_active <= 1'b0;
+							state <= PH_DECODE;
 						end
-				REC_DATA: begin
-							if(fr_byte_count == fr_data_size) begin
-								fr_valid <= 1'b0;
-								state <= WAIT_EOT;
-							end
-							else begin
-								fr_byte_count <= fr_byte_count + 2;
+						else if(pxdata_id) begin
+							if(frame_active) begin
+								byte_count <= 0;
+								packet_size <= ph_stream[23:8];
 								state <= REC_DATA;
 							end
+							else state <= WAIT_EOT;
 						end
-				default: begin
-							fr_valid <= 0;
-							fr_active <= 0;
-						end
+					end
+					else if(valid_stream && ~ph_select) state <= WAIT_EOT;
+					else state <= PH_DECODE;
+				end
+				WAIT_EOT: begin
+					if(valid_stream) state <= WAIT_EOT;
+					else state <= PH_DECODE;
+				end
+				REC_DATA: 	begin
+					if(byte_count < packet_size) begin
+						frame_valid <= 1'b1;
+						out_stream <= data_stream;
+						byte_count <= byte_count + 2;
+						state <= REC_DATA;
+					end
+					else begin
+						frame_valid <= 1'b0;
+						out_stream <= 0;
+						state <= WAIT_EOT;
+					end
+				end				
 			endcase
 		end
-	end
-
-
-	assign out_stream = data_stream;
-	assign frame_active = fr_active;
-	assign frame_valid = fr_valid;
+	end	
 
 endmodule
