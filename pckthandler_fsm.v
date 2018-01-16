@@ -37,10 +37,9 @@ module pckthandler_fsm(rxbyteclkhs, reset, data_stream, ph_stream, ph_select, va
 	reg [(DATA_STREAM_WIDTH-1):0] out_stream;
 
 	wire sof_id, eof_id, pxdata_id;
-	wire [5:0] data_id_fied = ph_stream[5:0];
-	assign sof_id = (data_id_field == 6'h00) ? 1'b1 : 1'b0;
-	assign eof_id = (data_id_field == 6'h01) ? 1'b1 : 1'b0;
-	assign pxdata_id = (data_id_field == 6'h2B) ? 1'b1 : 1'b0;  // 2B = RAW10
+	assign sof_id = (ph_stream[5:0] == 6'h00) ? 1'b1 : 1'b0;
+	assign eof_id = (ph_stream[5:0] == 6'h01) ? 1'b1 : 1'b0;
+	assign pxdata_id = (ph_stream[5:0] == 6'h2B) ? 1'b1 : 1'b0;  // 2B = RAW10
 
 	reg [1:0] state;
 	reg [15:0] packet_size, byte_count;
@@ -55,6 +54,7 @@ module pckthandler_fsm(rxbyteclkhs, reset, data_stream, ph_stream, ph_select, va
 			frame_valid <= 0;
 			packet_size <= 0;
 			byte_count <= 0;
+			out_stream <= 0;
 			state <= PH_DECODE;
 		end
 		else begin
