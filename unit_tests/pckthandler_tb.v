@@ -7,6 +7,7 @@ module pckthandler_tb;
 	reg [15:0] dout_exp;
 	reg fr_valid_exp, fr_active_exp;
 	integer fd, status;
+	reg [128*8-1:0] string;
 
 	pckthandler DUT(clk, reset, din, din_valid, dout, fr_active, fr_valid);
 
@@ -28,10 +29,12 @@ module pckthandler_tb;
 		din = 0; din_valid = 0;
 		@(negedge reset);
 		while(!$feof(fd)) begin
-			status = $fscanf(fd, "%h, %h, %h, %h, %h\n", din, din_valid, dout_exp, fr_active_exp, fr_valid_exp);
-			@(posedge clk);
-			#1 $display("din=%h, din_valid=%h, dout=%h, dout_exp=%h, fr_active=%h, fr_active_exp=%h, fr_valid=%h, fr_valid_exp=%h",
-				din, din_valid, dout, dout_exp, fr_active, fr_active_exp, fr_valid, fr_valid_exp);
+			status = $fgets(string, fd);
+			if($sscanf(string, "%h, %h, %h, %h, %h\n", din, din_valid, dout_exp, fr_active_exp, fr_valid_exp) == 5) begin
+				@(posedge clk);
+				#1 $display("din=%h, din_valid=%h, dout=%h, dout_exp=%h, fr_active=%h, fr_active_exp=%h, fr_valid=%h, fr_valid_exp=%h",
+					din, din_valid, dout, dout_exp, fr_active, fr_active_exp, fr_valid, fr_valid_exp);
+			end			
 		end
 		repeat(25) @(posedge clk);
 		$fclose(fd);
