@@ -34,7 +34,8 @@ module pckthandler_tb;
 				@(posedge clk);
 				#1 $display("din=%h, din_valid=%h, dout=%h, dout_exp=%h, fr_active=%h, fr_active_exp=%h, fr_valid=%h, fr_valid_exp=%h",
 					din, din_valid, dout, dout_exp, fr_active, fr_active_exp, fr_valid, fr_valid_exp);
-			end			
+			end
+			
 		end
 		repeat(25) @(posedge clk);
 		$fclose(fd);
