@@ -14,6 +14,9 @@ ph_finder: ph_finder_tb.v
 ecc_block: ecc_block_tb.v
 	iverilog $(FLAGS) $^ -o $(OUTPUT)
 
+raw10_decoder: raw10_decoder_tb.v
+	iverilog $(FLAGS) $^ -o $(OUTPUT)
+
 .PHONY: run, clean
 run: $(OUTPUT)
 	vvp $(OUTPUT)
