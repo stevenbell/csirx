@@ -9,7 +9,7 @@ module raw10_decoder_tb;
 	reg valid_exp;
 
 	integer fd, status;	
-	reg [128*8-1:0] string;
+	reg [128*8-1:0] vecstr; // Line of file for input vector
 
 	raw10_decoder DUT(clk, reset, din, frame_active, frame_valid, dout, valid);
 
@@ -32,8 +32,8 @@ module raw10_decoder_tb;
 		din = 0; frame_valid = 0; frame_active = 0;
 		@(negedge reset);
 		while(!$feof(fd)) begin
-			status = $fgets(string, fd);
-			if($sscanf(string, "%h, %h, %h, %h, %h\n", din, frame_active, frame_valid, dout_exp, valid_exp) == 5) begin
+			status = $fgets(vecstr, fd);
+			if($sscanf(vecstr, "%h, %h, %h, %h, %h\n", din, frame_active, frame_valid, dout_exp, valid_exp) == 5) begin
 				@(posedge clk);
 				#1 $display("din=%h, fr_active=%b, fr_valid=%b, dout=%h, dout_exp=%h, valid=%b, valid_exp=%b",
 					din, frame_active, frame_valid, dout, dout_exp, valid, valid_exp);

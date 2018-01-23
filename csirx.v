@@ -42,7 +42,7 @@ module csirx # (
   wire[(N_DATA_LANES*8)-1:0] word_out;
   wire word_valid;
 
-  csirx_wordalign align(
+  wordalign align(
     .clk(rxbyteclkhs),
     .resetn(rxbyteclkhs_resetn),
     .dl0_rxvalidhs(dl0_rxvalidhs),
