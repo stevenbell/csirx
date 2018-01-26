@@ -5,6 +5,9 @@ FLAGS 	= -g2005 -y $(ROOT)
 pckthandler: pckthandler_tb.v
 	iverilog $(FLAGS) $^ -o $(OUTPUT)
 
+pckthandler2: pckthandler_tb2.v
+	iverilog $(FLAGS) $^ -o $(OUTPUT)
+
 pckthandler_fsm: pckthandler_fsm_tb.v
 	iverilog $(FLAGS) $^ -o $(OUTPUT)
 

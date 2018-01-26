@@ -32,7 +32,7 @@ module raw10_decoder(rxbyteclkhs, reset, data_in, frame_active, frame_valid, dat
 	reg [7:0] buff[3:0];
 	reg [2:0] state;
 
-	wire valid = frame_active & frame_active;
+	wire valid = frame_active & frame_valid;
 
 	always @(posedge rxbyteclkhs) begin
 		if(reset | ~valid) begin
