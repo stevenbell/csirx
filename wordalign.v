@@ -20,7 +20,7 @@ module wordalign # (
   input wire dl1_rxvalidhs, // Lane 1 valid
   input wire [7:0] dl0_rxdatahs, // Lane 0 data
   input wire [7:0] dl1_rxdatahs, // Lane 1 data
-  output wire [15:0] word_out,
+  output wire [15:0] word_out, // { lane 0[7:0], lane 1[7:0] }
   output reg word_valid
 );
 
@@ -32,15 +32,15 @@ module wordalign # (
   reg[1:0] valid_delay[MAX_CHANNEL_DELAY+1];
 
   wire locked; // Whether we have aquired a sync pulse from all channels
-  reg[7:0] byte_high;
-  reg[7:0] byte_low;
+  reg[7:0] byte_lane0;
+  reg[7:0] byte_lane1;
 
   integer i; // Loop counter
 
   always @(posedge clk) begin
     if(~resetn) begin
-      byte_high <= 0;
-      byte_low <= 0;
+      byte_lane0 <= 0;
+      byte_lane1 <= 0;
       for(i = 0; i <= MAX_CHANNEL_DELAY; i++) begin
         word_delay[i] <= 0;
         sync_delay[i] <= 2'b00;
@@ -74,22 +74,22 @@ module wordalign # (
 
       // Select the appropriate bytes from the delay chain based on the sync delays
       if(sync_delay[0][1])
-        byte_high <= word_delay[0][15:8];
+        byte_lane0 <= word_delay[0][15:8];
       else if(sync_delay[1][1])
-        byte_high <= word_delay[1][15:8];
+        byte_lane0 <= word_delay[1][15:8];
       else if(sync_delay[2][1])
-        byte_high <= word_delay[2][15:8];
+        byte_lane0 <= word_delay[2][15:8];
       else
-        byte_high <= 0;
+        byte_lane0 <= 0;
       
       if(sync_delay[0][0])
-        byte_low <= word_delay[0][7:0];
+        byte_lane1 <= word_delay[0][7:0];
       else if(sync_delay[1][0])
-        byte_low <= word_delay[1][7:0];
+        byte_lane1 <= word_delay[1][7:0];
       else if(sync_delay[2][0])
-        byte_low <= word_delay[2][7:0];
+        byte_lane1 <= word_delay[2][7:0];
       else
-        byte_low <= 0;
+        byte_lane1 <= 0;
     end // else (~reset)
   end
 
@@ -103,7 +103,7 @@ module wordalign # (
                    (sync_delay[1][1] & valid_delay[1][1]) | 
                    (sync_delay[2][1] & valid_delay[2][1]));
  
-  assign word_out = {byte_low, byte_high};
+  assign word_out = {byte_lane0, byte_lane1};
 
 endmodule
 

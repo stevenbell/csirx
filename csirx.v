@@ -33,14 +33,26 @@ module csirx # (
   // AXI-stream master output
   // Uses the clock and reset from rxbyteclkhs
   output wire  m_axis_tvalid,
-  output wire [(N_DATA_LANES*8)-1 : 0] m_axis_tdata,
-  output wire [N_DATA_LANES-1 : 0] m_axis_tstrb,
+  //output wire [(N_DATA_LANES*8)-1 : 0] m_axis_tdata,
+  output wire [63 : 0] m_axis_tdata,
+  //output wire [N_DATA_LANES-1 : 0] m_axis_tstrb,
+  output wire [7 : 0] m_axis_tstrb,
   output wire  m_axis_tlast,
   input wire  m_axis_tready
 );
 
-  wire[(N_DATA_LANES*8)-1:0] word_out;
-  wire word_valid;
+  wire reset;
+  wire[(N_DATA_LANES*8)-1:0] aligned_word_out;
+  wire aligned_word_valid;
+
+  wire frame_active; // Whether we're in the process of receiving a frame
+  wire frame_valid; // Whether the output frame data is actually valid
+  wire [(N_DATA_LANES*8)-1 : 0] frame_out;
+
+  wire [63:0] unpacked_out;
+  wire unpacked_out_valid;
+
+  assign reset = ~rxbyteclkhs_resetn; // Make an active-high reset
 
   wordalign align(
     .clk(rxbyteclkhs),
@@ -49,12 +61,30 @@ module csirx # (
     .dl1_rxvalidhs(dl1_rxvalidhs),
     .dl0_rxdatahs(dl0_rxdatahs),
     .dl1_rxdatahs(dl1_rxdatahs),
-    .word_out(word_out),
-    .word_valid(word_valid));
+    .word_out(aligned_word_out),
+    .word_valid(aligned_word_valid));
 
-    assign m_axis_tdata = word_out;
-    assign m_axis_tvalid = word_valid;
-    assign m_axis_tstrb = 2'b1;
+  pckthandler depacket(
+    .rxbyteclkhs(rxbyteclkhs),
+    .reset(reset),
+    .in_stream_valid(aligned_word_valid),
+    .in_stream(aligned_word_out),
+    .frame_active(frame_active),
+    .frame_valid(frame_valid),
+    .out_stream(frame_out));
+
+  raw10_decoder unpack(
+    .rxbyteclkhs(rxbyteclkhs),
+    .reset(reset),
+    .frame_active(frame_active),
+    .frame_valid(frame_valid),
+    .data_in(frame_out),
+    .out_valid(unpacked_out_valid),
+    .data_out(unpacked_out));
+
+    assign m_axis_tdata = unpacked_out;
+    assign m_axis_tvalid = unpacked_out_valid;
+    assign m_axis_tstrb = 8'b1;
     assign m_axis_tlast = 1'b0;
 
     // Always enable the D-PHY

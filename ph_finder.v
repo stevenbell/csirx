@@ -19,7 +19,7 @@ module ph_finder(rxbyteclkhs, reset, din, din_valid, dout, dout_valid, ph_select
 
 	/* inputs */
 	input wire rxbyteclkhs, reset;
-	input wire [15:0] din;
+	input wire [15:0] din; // { lane0[7:0], lane1[7:0] }
 	input wire din_valid;
 
 	/* outputs */
