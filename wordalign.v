@@ -25,11 +25,11 @@ module wordalign # (
 );
 
   // Delayed copies of the input word, which is the concatenation of the input bytes
-  reg[15:0] word_delay[MAX_CHANNEL_DELAY+1];
+  reg[15:0] word_delay[MAX_CHANNEL_DELAY+1:0];
   // Delayed copies of the sync lines, which form a set of one-hot delay counters
-  reg[1:0] sync_delay[MAX_CHANNEL_DELAY+1];
+  reg[1:0] sync_delay[MAX_CHANNEL_DELAY+1:0];
   // Delayed copies of the valid bits, so the output invalidation is synced
-  reg[1:0] valid_delay[MAX_CHANNEL_DELAY+1];
+  reg[1:0] valid_delay[MAX_CHANNEL_DELAY+1:0];
 
   wire locked; // Whether we have aquired a sync pulse from all channels
   reg[7:0] byte_lane0;
@@ -41,7 +41,7 @@ module wordalign # (
     if(~resetn) begin
       byte_lane0 <= 0;
       byte_lane1 <= 0;
-      for(i = 0; i <= MAX_CHANNEL_DELAY; i++) begin
+      for(i = 0; i <= MAX_CHANNEL_DELAY; i = i+1) begin
         word_delay[i] <= 0;
         sync_delay[i] <= 2'b00;
         valid_delay[i] <= 2'b00;

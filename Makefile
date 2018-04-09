@@ -1,5 +1,5 @@
 
-IVERILOG := iverilog -g2005-sv
+IVERILOG := iverilog -g2005
 BUILDDIR := build
 
 .PHONY: all clean
