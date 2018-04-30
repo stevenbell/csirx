@@ -12,8 +12,10 @@
  * @param out_stream csi payload stream (output)
  * @param frame_active determines whether new frame either about to transmitted or in progress (output)
  * @param frame_valid determines whether a frame output is in progress (output)
+ * @param lines_per_frame is the number of image lines per frame
+ * @param last_packet indicates whether the packet on out_stream is the last packet for the frame
  */
-module pckthandler(rxbyteclkhs, reset, in_stream, in_stream_valid, out_stream, frame_active, frame_valid);
+module pckthandler(rxbyteclkhs, reset, in_stream, in_stream_valid, out_stream, frame_active, frame_valid, lines_per_frame, last_packet);
 	
 	/* parameters */
 	parameter IN_STREAM_WIDTH		= 16;
@@ -22,10 +24,12 @@ module pckthandler(rxbyteclkhs, reset, in_stream, in_stream_valid, out_stream, f
 	/* inputs */
 	input rxbyteclkhs, reset, in_stream_valid;
 	input [(IN_STREAM_WIDTH-1):0] in_stream;
+	input [31:0] lines_per_frame;
 
 	/* outputs */
 	output frame_active, frame_valid;
 	output [(OUT_STREAM_WIDTH-1):0] out_stream;
+	output last_packet;
 
 	/* internal decl */
 	wire [31:0] ph_finder_out;
@@ -61,6 +65,8 @@ module pckthandler(rxbyteclkhs, reset, in_stream, in_stream_valid, out_stream, f
 		.ecc_error(ecc_error),
 		.out_stream(out_stream),
 		.frame_active(frame_active),
-		.frame_valid(frame_valid)
+		.frame_valid(frame_valid),
+		.lines_per_frame(lines_per_frame),
+		.last_packet(last_packet)
 	);
 endmodule

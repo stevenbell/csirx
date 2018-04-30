@@ -9,9 +9,11 @@
  * @param data_in 16-bit input data (byte1, byte2)
  * @param data_out 64-bit (4pixels: [pixel4, pixel3, pixel2, pixel1])
  * @param out_valid 1-bit output to indicate whether the 64-bit output is valid or not
+ * @param last_packet_in input signal to indicate if data_in contains the last packet for the frame
+ * @param last_packet_out output signal to indicate that data_out contains the last packet for the frame
  */
 
-module raw10_decoder(rxbyteclkhs, reset, data_in, frame_active, frame_valid, data_out, out_valid);
+module raw10_decoder(rxbyteclkhs, reset, data_in, frame_active, frame_valid, data_out, out_valid, last_packet_in, last_packet_out);
 
 	// parameters
 	parameter IN_DATA_WIDTH		= 16;
@@ -20,10 +22,12 @@ module raw10_decoder(rxbyteclkhs, reset, data_in, frame_active, frame_valid, dat
 	// inputs
 	input wire rxbyteclkhs, reset, frame_active, frame_valid;
 	input [(IN_DATA_WIDTH-1):0] data_in;
+	input last_packet_in;
 
 	// outputs
 	output out_valid;
 	output [(OUT_DATA_WIDTH-1):0] data_out;
+	output reg last_packet_out;
 
 	// internal decls
 	reg out_valid;
@@ -33,6 +37,11 @@ module raw10_decoder(rxbyteclkhs, reset, data_in, frame_active, frame_valid, dat
 	reg [2:0] state;
 
 	wire valid = frame_active & frame_valid;
+	
+	always @(posedge rxbyteclkhs) begin
+	   if(reset | ~valid) last_packet_out <= 0;
+	   else last_packet_out <= last_packet_in;
+	end
 
 	always @(posedge rxbyteclkhs) begin
 		if(reset | ~valid) begin
