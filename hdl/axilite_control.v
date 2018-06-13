@@ -1,119 +1,117 @@
+/* axilite_control  Implementation of an AXI-Lite control bus and register
+ * space for the CSI receiver. */
 
 `timescale 1 ns / 1 ps
 
-	module axi_csi_v1_1_RegSpace_S_AXI #
-	(
-		// Users to add parameters here
-        parameter integer N_DATA_LANES = 2,
-		// User parameters ends
-		// Do not modify the parameters beyond this line
+module axilite_control #
+(
+    // Lots of things are hard-coded for 2 data lanes, so this isn't configurable
+    parameter integer N_DATA_LANES = 2,
 
-		// Width of S_AXI data bus
-		parameter integer C_S_AXI_DATA_WIDTH	= 32,
-		// Width of S_AXI address bus
-		parameter integer C_S_AXI_ADDR_WIDTH	= 5
-	)
-	(
-		// Users to add ports here
-		
-		// interrupt line
-		output wire csi_intr,
-		
-		// reset signal synchronized to rxbyteclkhs clock
-		input wire rxbyteclkhs_resetn,
-		
-		// PPI interface
-		input wire cl_stopstate,
-		output wire cl_enable,
-		input wire rxbyteclkhs,
-		
-		input wire dl0_rxactivehs,
-		input wire dl0_rxsynchs,
-		output wire dl0_enable,
-		output wire dl0_forcerxmode,
-		input wire dl0_rxvalidhs,
-		input wire [7:0] dl0_rxdatahs,
-		
-		input wire dl1_rxactivehs,
-        input wire dl1_rxsynchs,
-        output wire dl1_enable,
-        output wire dl1_forcerxmode,
-        input wire dl1_rxvalidhs,
-        input wire [7:0] dl1_rxdatahs,
-        
-        // AXI Stream Interface Output
-        // Uses the rxbyteclkhs clock
-        // and rxbyteclkhs_resetn reset signals
-        output wire m_axis_tvalid,
-        output wire [63:0] m_axis_tdata,
-        output wire [7:0] m_axis_tstrb,
-        output wire m_axis_tlast,
-        input wire m_axis_tready,
+	// Width of S_AXI data bus
+	parameter integer C_S_AXI_DATA_WIDTH	= 32,
+	// Width of S_AXI address bus
+	parameter integer C_S_AXI_ADDR_WIDTH	= 5
+)
+(
+	// interrupt line
+	output wire csi_intr,
+	
+	// reset signal synchronized to rxbyteclkhs clock
+	input wire rxbyteclkhs_resetn,
+	
+	// PPI interface
+	input wire cl_stopstate,
+	output wire cl_enable,
+	input wire rxbyteclkhs,
+	
+	input wire dl0_rxactivehs,
+	input wire dl0_rxsynchs,
+	output wire dl0_enable,
+	output wire dl0_forcerxmode,
+	input wire dl0_rxvalidhs,
+	input wire [7:0] dl0_rxdatahs,
+	
+	input wire dl1_rxactivehs,
+    input wire dl1_rxsynchs,
+    output wire dl1_enable,
+    output wire dl1_forcerxmode,
+    input wire dl1_rxvalidhs,
+    input wire [7:0] dl1_rxdatahs,
+    
+    // AXI Stream Interface Output
+    // Uses the rxbyteclkhs clock
+    // and rxbyteclkhs_resetn reset signals
+    output wire m_axis_tvalid,
+    output wire [63:0] m_axis_tdata,
+    output wire [7:0] m_axis_tstrb,
+    output wire m_axis_tlast,
+    input wire m_axis_tready,
 
-		// User ports ends
-		// Do not modify the ports beyond this line
+	// User ports ends
+	// Do not modify the ports beyond this line
 
-		// Global Clock Signal
-		input wire  S_AXI_ACLK,
-		// Global Reset Signal. This Signal is Active LOW
-		input wire  S_AXI_ARESETN,
-		// Write address (issued by master, acceped by Slave)
-		input wire [C_S_AXI_ADDR_WIDTH-1 : 0] S_AXI_AWADDR,
-		// Write channel Protection type. This signal indicates the
-    		// privilege and security level of the transaction, and whether
-    		// the transaction is a data access or an instruction access.
-		input wire [2 : 0] S_AXI_AWPROT,
-		// Write address valid. This signal indicates that the master signaling
-    		// valid write address and control information.
-		input wire  S_AXI_AWVALID,
-		// Write address ready. This signal indicates that the slave is ready
-    		// to accept an address and associated control signals.
-		output wire  S_AXI_AWREADY,
-		// Write data (issued by master, acceped by Slave) 
-		input wire [C_S_AXI_DATA_WIDTH-1 : 0] S_AXI_WDATA,
-		// Write strobes. This signal indicates which byte lanes hold
-    		// valid data. There is one write strobe bit for each eight
-    		// bits of the write data bus.    
-		input wire [(C_S_AXI_DATA_WIDTH/8)-1 : 0] S_AXI_WSTRB,
-		// Write valid. This signal indicates that valid write
-    		// data and strobes are available.
-		input wire  S_AXI_WVALID,
-		// Write ready. This signal indicates that the slave
-    		// can accept the write data.
-		output wire  S_AXI_WREADY,
-		// Write response. This signal indicates the status
-    		// of the write transaction.
-		output wire [1 : 0] S_AXI_BRESP,
-		// Write response valid. This signal indicates that the channel
-    		// is signaling a valid write response.
-		output wire  S_AXI_BVALID,
-		// Response ready. This signal indicates that the master
-    		// can accept a write response.
-		input wire  S_AXI_BREADY,
-		// Read address (issued by master, acceped by Slave)
-		input wire [C_S_AXI_ADDR_WIDTH-1 : 0] S_AXI_ARADDR,
-		// Protection type. This signal indicates the privilege
-    		// and security level of the transaction, and whether the
-    		// transaction is a data access or an instruction access.
-		input wire [2 : 0] S_AXI_ARPROT,
-		// Read address valid. This signal indicates that the channel
-    		// is signaling valid read address and control information.
-		input wire  S_AXI_ARVALID,
-		// Read address ready. This signal indicates that the slave is
-    		// ready to accept an address and associated control signals.
-		output wire  S_AXI_ARREADY,
-		// Read data (issued by slave)
-		output wire [C_S_AXI_DATA_WIDTH-1 : 0] S_AXI_RDATA,
-		// Read response. This signal indicates the status of the
-    		// read transfer.
-		output wire [1 : 0] S_AXI_RRESP,
-		// Read valid. This signal indicates that the channel is
-    		// signaling the required read data.
-		output wire  S_AXI_RVALID,
-		// Read ready. This signal indicates that the master can
-    		// accept the read data and response information.
-		input wire  S_AXI_RREADY
-	);
+	// Global Clock Signal
+	input wire  S_AXI_ACLK,
+	// Global Reset Signal. This Signal is Active LOW
+	input wire  S_AXI_ARESETN,
+	// Write address (issued by master, acceped by Slave)
+	input wire [C_S_AXI_ADDR_WIDTH-1 : 0] S_AXI_AWADDR,
+	// Write channel Protection type. This signal indicates the
+		// privilege and security level of the transaction, and whether
+		// the transaction is a data access or an instruction access.
+	input wire [2 : 0] S_AXI_AWPROT,
+	// Write address valid. This signal indicates that the master signaling
+		// valid write address and control information.
+	input wire  S_AXI_AWVALID,
+	// Write address ready. This signal indicates that the slave is ready
+		// to accept an address and associated control signals.
+	output wire  S_AXI_AWREADY,
+	// Write data (issued by master, acceped by Slave) 
+	input wire [C_S_AXI_DATA_WIDTH-1 : 0] S_AXI_WDATA,
+	// Write strobes. This signal indicates which byte lanes hold
+		// valid data. There is one write strobe bit for each eight
+		// bits of the write data bus.    
+	input wire [(C_S_AXI_DATA_WIDTH/8)-1 : 0] S_AXI_WSTRB,
+	// Write valid. This signal indicates that valid write
+		// data and strobes are available.
+	input wire  S_AXI_WVALID,
+	// Write ready. This signal indicates that the slave
+		// can accept the write data.
+	output wire  S_AXI_WREADY,
+	// Write response. This signal indicates the status
+		// of the write transaction.
+	output wire [1 : 0] S_AXI_BRESP,
+	// Write response valid. This signal indicates that the channel
+		// is signaling a valid write response.
+	output wire  S_AXI_BVALID,
+	// Response ready. This signal indicates that the master
+		// can accept a write response.
+	input wire  S_AXI_BREADY,
+	// Read address (issued by master, acceped by Slave)
+	input wire [C_S_AXI_ADDR_WIDTH-1 : 0] S_AXI_ARADDR,
+	// Protection type. This signal indicates the privilege
+		// and security level of the transaction, and whether the
+		// transaction is a data access or an instruction access.
+	input wire [2 : 0] S_AXI_ARPROT,
+	// Read address valid. This signal indicates that the channel
+		// is signaling valid read address and control information.
+	input wire  S_AXI_ARVALID,
+	// Read address ready. This signal indicates that the slave is
+		// ready to accept an address and associated control signals.
+	output wire  S_AXI_ARREADY,
+	// Read data (issued by slave)
+	output wire [C_S_AXI_DATA_WIDTH-1 : 0] S_AXI_RDATA,
+	// Read response. This signal indicates the status of the
+		// read transfer.
+	output wire [1 : 0] S_AXI_RRESP,
+	// Read valid. This signal indicates that the channel is
+		// signaling the required read data.
+	output wire  S_AXI_RVALID,
+	// Read ready. This signal indicates that the master can
+		// accept the read data and response information.
+	input wire  S_AXI_RREADY
+);
     
     // used for interrupts and run/stop
     localparam NUM_INTRS    = 2; // number of interrupts
