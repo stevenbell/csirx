@@ -476,7 +476,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>755c5463</spirit:value>
+            <spirit:value>b6a6cb14</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -492,7 +492,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>755c5463</spirit:value>
+            <spirit:value>b6a6cb14</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1278,24 +1278,24 @@
       </xilinx:taxonomies>
       <xilinx:displayName>axi_csi</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>2</xilinx:coreRevision>
+      <xilinx:coreRevision>3</xilinx:coreRevision>
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>user.org:user:axi_csi_v1_1:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2018-06-13T23:17:01Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2018-06-14T06:14:13Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="nopcore"/>
         <xilinx:tag xilinx:name="user.org:user:axi_csi_v1_1:1.0_ARCHIVE_LOCATION">/mnt/data/Documents/research/fcam5/mipi_csi/csirx</xilinx:tag>
         <xilinx:tag xilinx:name="stanford.edu:user:axi_csi_v1_1:1.0_ARCHIVE_LOCATION">/mnt/data/Documents/research/fcam5/mipi_csi/csirx</xilinx:tag>
         <xilinx:tag xilinx:name="stanford.edu:user:axi_csi:1.0_ARCHIVE_LOCATION">/mnt/data/Documents/research/fcam5/mipi_csi/csirx</xilinx:tag>
-        <xilinx:tag xilinx:name="stanford.edu:user:axi_csi:1.1_ARCHIVE_LOCATION">/mnt/data/Documents/research/fcam5/mipi_csi/csirx</xilinx:tag>
+        <xilinx:tag xilinx:name="stanford.edu:user:axi_csi:1.1_ARCHIVE_LOCATION">/nobackup/sebell/work/ultrazed/ip_repo/csirx</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2017.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="c445ed4b"/>
-      <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="128b02e6"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="f87e4531"/>
+      <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ca56e28c"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="2006f61b"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="dab8e393"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="3fe4c1bb"/>
     </xilinx:packagingInfo>

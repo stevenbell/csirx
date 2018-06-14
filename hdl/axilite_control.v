@@ -118,7 +118,7 @@ module axilite_control #
     localparam SOF_REG_BIT  = 2; // bit position for SOF interrupts in CONFIG, CTRL, and STATUS registers
     localparam SOF_INTR_BIT = 0; // bit position for SOF interrupts in irqs_posted
     localparam EOF_REG_BIT  = 3; // bit position for EOF interrupts in CONFIG, CTRL, and STATUS registers
-    localparam OUTPUT_DIS_BIT = 4; // bit position for Output Disable Option. When set, core runs but output isn't produced
+    localparam OUTPUT_EN_BIT = 4; // bit position for Output Enable. When zero, core runs but output isn't produced
     localparam EOF_INTR_BIT = 1; // bit position for EOF interrupts in irqs_posted
     localparam GLOBALINT_BIT= 1; // bit position for global interrupts in CONFIG, CTRL, and STATUS registers
     localparam RS_REG_BIT   = 0; // bit position for Run/Stop in CONFIG, CTRL, and STATUS registers
@@ -127,6 +127,7 @@ module axilite_control #
     reg frame_active_new, frame_active_last;
     reg RS_flag;
     reg RS_new, RS_last;
+    reg enable_output; // Output enable flag latched in at SOF
     
     // other user signals
     wire reset;
@@ -585,11 +586,24 @@ module axilite_control #
         .last_packet_out(unpacked_last)
     );
     
+
+    // Latch in the output enable signal on SOF
+    // The frame_active signal goes high just before the first data goes out
+    always @(posedge S_AXI_ACLK)
+    begin
+        if ( S_AXI_ARESETN == 1'b0 )
+            enable_output <= 0;
+        else if(~frame_active_last & frame_active_new)
+            enable_output <= CSI_CONFIG_REG[OUTPUT_EN_BIT];
+        else
+            enable_output <= enable_output;
+    end
+
     // Stream Interface
-    assign m_axis_tdata = CSI_CONFIG_REG[OUTPUT_DIS_BIT] ? 0 : unpacked_out;
-    assign m_axis_tvalid = CSI_CONFIG_REG[OUTPUT_DIS_BIT] ? 0 : unpacked_out_valid;
-    assign m_axis_tstrb = CSI_CONFIG_REG[OUTPUT_DIS_BIT] ? 0 : 8'b11111111;
-    assign m_axis_tlast = CSI_CONFIG_REG[OUTPUT_DIS_BIT] ? 0 : unpacked_last;
+    assign m_axis_tdata =  enable_output ? unpacked_out : 0;
+    assign m_axis_tvalid = enable_output ? unpacked_out_valid : 0;
+    assign m_axis_tstrb =  enable_output ? 8'b11111111 : 0;
+    assign m_axis_tlast =  enable_output ? unpacked_last : 0;
     
     // always enable the D-PHY
     assign cl_enable = 1'b1;
