@@ -325,12 +325,12 @@
       <spirit:parameters>
         <spirit:parameter>
           <spirit:name>ASSOCIATED_BUSIF</spirit:name>
-          <spirit:value spirit:id="BUSIFPARAM_VALUE.PPI_RXBYTECLKHS_CLK.ASSOCIATED_BUSIF">PPI_IN:output_m_axis</spirit:value>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.PPI_RXBYTECLKHS_CLK.ASSOCIATED_BUSIF">input_mipi_ppi:output_m_axis</spirit:value>
         </spirit:parameter>
       </spirit:parameters>
     </spirit:busInterface>
     <spirit:busInterface>
-      <spirit:name>PPI_IN</spirit:name>
+      <spirit:name>input_mipi_ppi</spirit:name>
       <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="rx_mipi_ppi_if" spirit:version="1.0"/>
       <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="rx_mipi_ppi_if_rtl" spirit:version="1.0"/>
       <spirit:slave/>
